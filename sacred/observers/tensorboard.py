@@ -1,7 +1,8 @@
-from sacred.observers.base import RunObserver
 from tensorboardX import SummaryWriter
 import os
+import collections
 
+from sacred.observers.base import RunObserver
 
 class TensorboardObserver(RunObserver):
     def __init__(self, basedir):
