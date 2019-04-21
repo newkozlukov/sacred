@@ -22,14 +22,15 @@ class TensorboardObserver(RunObserver):
                 'host_info': host_info,
                 }
 
-        comment = (
+        experiment_description = (
                 "♻ *{experiment[name]}* " \
                 "started at _{start_time}_ " \
                 "on host `{host_info[hostname]}`")
-        if 'comment' in config:
-            comment + ': {config[comment]}'
-        comment = comment.format(**self.run)
-        self.tensorboard = SummaryWriter(run_path, comment=comment)
+        if 'experiment_description' in config:
+            experiment_description + ': {config[experiment_description]}'
+        experiment_description = experiment_description.format(**self.run)
+        self.experiment_description = experiment_description
+        self.tensorboard = SummaryWriter(run_path)
 
     def log_metrics(self, metrics_by_name, info):
         """Store new measurements via tensorboardX.
