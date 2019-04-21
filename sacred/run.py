@@ -6,6 +6,9 @@ import datetime
 import os.path
 import sys
 import traceback as tb
+import typing
+import numpy as np
+import multimethod
 
 from sacred import metrics_logger
 from sacred.metrics_logger import linearize_metrics
@@ -157,12 +160,13 @@ class Run(object):
         filename = os.path.abspath(filename)
         self._emit_resource_added(filename)
 
+    @multimethod.multimethod
     def add_artifact(
             self,
-            filename,
-            name=None,
-            metadata=None,
-            content_type=None,
+            filename: str,
+            name: typing.Optional[str] = None,
+            metadata: typing.Optional[dict] = None,
+            content_type: typing.Optional[str] = None,
     ):
         """Add a file as an artifact.
 
@@ -189,6 +193,18 @@ class Run(object):
         filename = os.path.abspath(filename)
         name = os.path.basename(filename) if name is None else name
         self._emit_artifact_added(name, filename, metadata, content_type)
+
+    @add_artifact.register
+    def add_artifact(
+            self,
+            array: np.ndarray,
+            name: str,
+            metadata: typing.Optional[dict] = None,
+            content_type: typing.Optional[str] = None):
+        """Add an `ndarray` as an artifact"""
+        with tempfile.NamedTemporaryFile(suffix='.npy') as f:
+            np.save(array, f)
+            add_artifact(f.name, name, metadata, content_type)
 
     def __call__(self, *args):
         r"""Start this run.
