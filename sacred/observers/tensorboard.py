@@ -1,6 +1,8 @@
 from tensorboardX import SummaryWriter
 import os
 import collections
+import logging
+import pprint
 
 from sacred.observers.base import RunObserver
 
@@ -21,7 +23,6 @@ class TensorboardObserver(RunObserver):
                 'command': command,
                 'host_info': host_info,
                 }
-
         experiment_description = (
                 "♻ *{experiment[name]}* " \
                 "started at _{start_time}_ " \
@@ -31,6 +32,9 @@ class TensorboardObserver(RunObserver):
         experiment_description = experiment_description.format(**self.run)
         self.experiment_description = experiment_description
         self.tensorboard = SummaryWriter(run_path)
+        
+        logger = logging.getLogger(self.__class__.__name__)
+        logger.info(pprint.pformat(self.run))
 
     def log_metrics(self, metrics_by_name, info):
         """Store new measurements via tensorboardX.
