@@ -14,7 +14,6 @@ class TensorboardObserver(RunObserver):
     def started_event(self, ex_info, command, host_info, start_time,
                       config, meta_info, _id):
         run_path = os.path.join(self.basedir, str(_id))
-        assert not os.path.exists(run_path)
         self.run = {
                 '_id': _id,
                 'config': config,
